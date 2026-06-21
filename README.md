@@ -1,26 +1,41 @@
 # Linux Sysctl and Kernel Parameter Auditor
 
-A read-only Bash toolkit for comparing active kernel parameters with a practical security and networking baseline.
+A Linux support toolkit for comparing active kernel parameters with a baseline and applying selected guarded sysctl repairs.
 
-## Usage
+## Audit script
 
 ```bash
 chmod +x src/sysctl_kernel_auditor.sh
 sudo ./src/sysctl_kernel_auditor.sh
 ```
 
-## Checks performed
+## Repair script
 
-- IPv4 and IPv6 forwarding
-- Redirect acceptance and sending
-- Source-route and reverse-path filtering
-- SYN cookie, ASLR, kernel pointer, dmesg, ptrace, and core-dump controls
-- Active values, persistent configuration sources, and baseline differences
-- Text, CSV, and JSON reports
+```bash
+chmod +x src/sysctl_kernel_repair.sh
+sudo ./src/sysctl_kernel_repair.sh --apply-safe-baseline --dry-run
+```
+
+Examples:
+
+```bash
+sudo ./src/sysctl_kernel_repair.sh --set net.ipv4.ip_forward 0
+sudo ./src/sysctl_kernel_repair.sh --apply-safe-baseline
+sudo ./src/sysctl_kernel_repair.sh --reload
+```
+
+## What the repair does
+
+- Persists and applies one explicitly selected sysctl key and value.
+- Can install a practical managed baseline covering forwarding, redirects, source routing, reverse-path filtering, SYN cookies, ASLR, kernel pointer exposure, dmesg access, ptrace and core dumps.
+- Backs up existing managed drop-in files before replacement.
+- Reloads persistent sysctl configuration with `sysctl --system`.
+- Captures active and persistent values before and after repair.
+- Supports dry-run, confirmation prompts, logs and clear exit codes.
 
 ## Safety
 
-The script never applies sysctl values or edits persistent configuration.
+Kernel and network parameters change immediately and can affect routing, containers and applications. Review environment requirements before applying the full baseline. The tool does not edit arbitrary existing distribution files.
 
 ## Author
 
